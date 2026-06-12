@@ -28,7 +28,11 @@ export function formatPct(valor: number, casas = 1): string {
 }
 
 export function formatData(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", {
+  // Datas "YYYY-MM-DD" (ex.: relatorios.semana) precisam ser lidas no fuso
+  // local; new Date("YYYY-MM-DD") assume UTC e recua um dia em fusos negativos
+  // como America/São_Paulo. Timestamps completos (com hora) seguem normais.
+  const data = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00`) : new Date(iso);
+  return data.toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

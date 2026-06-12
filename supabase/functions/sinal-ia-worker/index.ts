@@ -185,10 +185,13 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  // Cotações atuais (primeira ocorrência por commodity = mais recente)
+  // Cotações atuais (primeira ocorrência por commodity = mais recente).
+  // Sempre spot/nacional — a mesma série que o produtor vê no dashboard.
   const { data: atuais, error: e1 } = await supabase
     .from("cotacoes_cache")
     .select("commodity, preco, unidade, capturado_em")
+    .eq("tipo", "spot")
+    .is("regiao", null)
     .order("capturado_em", { ascending: false })
     .limit(60);
   if (e1) return json({ error: e1.message }, 500);
@@ -198,6 +201,8 @@ Deno.serve(async (req) => {
   const { data: antigos, error: e2 } = await supabase
     .from("cotacoes_cache")
     .select("commodity, preco, capturado_em")
+    .eq("tipo", "spot")
+    .is("regiao", null)
     .lt("capturado_em", corte)
     .order("capturado_em", { ascending: false })
     .limit(30);
@@ -207,6 +212,8 @@ Deno.serve(async (req) => {
   const { data: janela, error: e3 } = await supabase
     .from("cotacoes_cache")
     .select("commodity, preco")
+    .eq("tipo", "spot")
+    .is("regiao", null)
     .gte("capturado_em", new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString())
     .limit(2000);
   if (e3) return json({ error: e3.message }, 500);

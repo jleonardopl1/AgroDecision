@@ -45,6 +45,8 @@ Deno.serve(async (req) => {
   const { data: cotacoes } = await supabase
     .from("cotacoes_cache")
     .select("commodity, preco")
+    .eq("tipo", "spot")
+    .is("regiao", null)
     .order("capturado_em", { ascending: false })
     .limit(60);
   const { data: cambios } = await supabase
