@@ -1,0 +1,25 @@
+# deps / build
+node_modules
+dist
+dist-ssr
+*.local
+
+# env — nunca commitar chaves privadas (service_role, Stripe, Anthropic...)
+.env
+.env.*
+!.env.example
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# supabase local
+supabase/.temp
+supabase/.branches
