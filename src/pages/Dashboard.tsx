@@ -34,12 +34,13 @@ export default function Dashboard() {
 
   const loading = loadingCooperado || loadingCotacoes;
 
-  // Commodities exibidas: as ativas na cooperativa (todas, se config vazia),
-  // com as culturas do produtor primeiro — a decisão dele vem no topo.
-  const ativas: Commodity[] = (config ?? [])
-    .filter((c) => c.ativo)
-    .map((c) => c.commodity);
-  const base = ativas.length > 0 ? ativas : [...COMMODITIES];
+  // Commodities exibidas: todas, menos as desativadas explicitamente pela
+  // cooperativa (commodity sem linha em config = exibida — mesmo critério do
+  // painel admin). As culturas do produtor vêm primeiro: a decisão dele no topo.
+  const desativadas = new Set(
+    (config ?? []).filter((c) => !c.ativo).map((c) => c.commodity),
+  );
+  const base: Commodity[] = COMMODITIES.filter((c) => !desativadas.has(c));
   const culturas = (cooperado?.culturas ?? []).filter(isCommodity);
   const ordenadas = [
     ...culturas.filter((c) => base.includes(c)),
