@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design system AgroDecision — paleta verde-campo.
+ * Fonte da verdade: src/lib/design-tokens.ts
+ *   verde-campo  #1A5C38 → hsl(147 56% 23%)
+ *   verde-claro  #E8F5EC → hsl(146 39% 94%)
+ *   laranja-colheita #F59E0B → hsl(38 92% 50%)
+ *   atenção      #DC2626 → hsl(0 72% 51%)
+ * As variáveis --primary/--accent são sobrescritas em runtime pelo branding
+ * co-branded da cooperativa (CoopThemeProvider).
+ */
+@layer base {
+  :root {
+    --background: 146 39% 97%;
+    --foreground: 215 28% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+
+    --primary: 147 56% 23%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 146 39% 94%;
+    --secondary-foreground: 147 56% 23%;
+
+    --muted: 146 20% 94%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 24 30% 15%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 146 20% 87%;
+    --input: 146 20% 87%;
+    --ring: 147 56% 23%;
+
+    /* raio 12px — design-tokens.ts */
+    --radius: 0.75rem;
+
+    --campo: 147 56% 23%;
+    --campo-claro: 146 39% 94%;
+    --colheita: 38 92% 50%;
+
+    --sinal-vender: 147 56% 23%;
+    --sinal-aguardar: 38 92% 50%;
+    --sinal-atencao: 0 72% 51%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
