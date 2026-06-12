@@ -12,6 +12,28 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const COOLDOWN_MS = 6 * 60 * 60 * 1000;
 
+const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
+const WHATSAPP_TOKEN = Deno.env.get("WHATSAPP_TOKEN") ?? "";
+const WHATSAPP_PHONE_ID = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") ?? "";
+
+async function enviaTelegram(chatId: string, texto: string) {
+  if (!TELEGRAM_BOT_TOKEN) return;
+  await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text: texto }),
+  });
+}
+
+async function enviaWhatsapp(to: string, texto: string) {
+  if (!WHATSAPP_TOKEN || !WHATSAPP_PHONE_ID) return;
+  await fetch(`https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_ID}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${WHATSAPP_TOKEN}` },
+    body: JSON.stringify({ messaging_product: "whatsapp", to, type: "text", text: { body: texto } }),
+  });
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -80,6 +102,25 @@ Deno.serve(async (req) => {
       >,
     };
 
+  // Vínculos verificados (WhatsApp/Telegram) dos donos de alertas com esses canais.
+  const idsCanais = [
+    ...new Set(
+      alertas
+        .filter((a) => (a.canais ?? []).some((c: string) => c === "whatsapp" || c === "telegram"))
+        .map((a) => a.cooperado_id),
+    ),
+  ];
+  const { data: vinculos } = idsCanais.length
+    ? await supabase
+      .from("chat_vinculos")
+      .select("cooperado_id, canal, chat_id")
+      .eq("verificado", true)
+      .in("cooperado_id", idsCanais)
+    : { data: [] as Array<{ cooperado_id: string; canal: string; chat_id: string | null }> };
+
+  const chatIdDe = (cooperadoId: string, canal: string): string | null =>
+    vinculos?.find((v) => v.cooperado_id === cooperadoId && v.canal === canal)?.chat_id ?? null;
+
   const agora = Date.now();
   let disparados = 0;
 
@@ -133,10 +174,20 @@ Deno.serve(async (req) => {
     }
 
     if (dispara) {
-      // TODO: OneSignal (push) + Twilio (WhatsApp) quando as chaves estiverem nas envs.
-      console.log(
-        `[alerta-worker] disparo ${alerta.id} (${alerta.canais?.join(",")}) → ${contexto}`,
-      );
+      const mensagem = `🔔 Alerta AgroDecision: ${contexto}`;
+      const canais: string[] = alerta.canais ?? [];
+
+      if (canais.includes("telegram")) {
+        const chatId = chatIdDe(alerta.cooperado_id, "telegram");
+        if (chatId) await enviaTelegram(chatId, mensagem);
+      }
+      if (canais.includes("whatsapp")) {
+        const phone = chatIdDe(alerta.cooperado_id, "whatsapp");
+        if (phone) await enviaWhatsapp(phone, mensagem);
+      }
+      // TODO: push no app (OneSignal) quando as chaves estiverem nas envs.
+      console.log(`[alerta-worker] disparo ${alerta.id} (${canais.join(",")}) → ${contexto}`);
+
       await supabase
         .from("alertas")
         .update({ ultimo_disparo: new Date().toISOString() })

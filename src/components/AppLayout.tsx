@@ -6,8 +6,10 @@ import {
   Home,
   Leaf,
   LogOut,
+  MessageCircle,
   Settings,
   User as UserIcon,
+  Wallet,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -26,7 +28,8 @@ import {
 
 const NAV_ITEMS = [
   { to: "/app", label: "Hoje", icon: Home, end: true },
-  { to: "/app/margem", label: "Margem", icon: Calculator },
+  { to: "/app/carteira", label: "Carteira", icon: Wallet },
+  { to: "/app/chat", label: "Conversa", icon: MessageCircle },
   { to: "/app/alertas", label: "Alertas", icon: Bell },
   { to: "/app/relatorios", label: "Relatórios", icon: FileText },
 ];
@@ -116,6 +119,9 @@ export function AppLayout() {
                   </Badge>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => navigate("/app/margem")}>
+                  <Calculator /> Calculadora de margem
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => navigate("/app/perfil")}>
                   <UserIcon /> Meu perfil
                 </DropdownMenuItem>

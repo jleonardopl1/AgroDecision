@@ -7,6 +7,8 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { Toaster } from "@/components/ui/sonner";
 import AdminCoop from "@/pages/AdminCoop";
 import Alertas from "@/pages/Alertas";
+import Carteira from "@/pages/Carteira";
+import Chat from "@/pages/Chat";
 import CoopPortal from "@/pages/CoopPortal";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
@@ -40,6 +42,8 @@ export default function App() {
             <Route element={<RequireAuth />}>
               <Route element={<AppLayout />}>
                 <Route path="/app" element={<Dashboard />} />
+                <Route path="/app/carteira" element={<Carteira />} />
+                <Route path="/app/chat" element={<Chat />} />
                 <Route path="/app/margem" element={<Margem />} />
                 <Route path="/app/alertas" element={<Alertas />} />
                 <Route path="/app/relatorios" element={<Relatorios />} />
