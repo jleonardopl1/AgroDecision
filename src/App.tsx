@@ -11,6 +11,7 @@ import Carteira from "@/pages/Carteira";
 import Chat from "@/pages/Chat";
 import CoopPortal from "@/pages/CoopPortal";
 import Dashboard from "@/pages/Dashboard";
+import DesignSystem from "@/pages/DesignSystem";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Margem from "@/pages/Margem";
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/c/:slug" element={<CoopPortal />} />
             <Route path="/entrar" element={<Login />} />
             <Route path="/cadastro" element={<Signup />} />
+            <Route path="/design-system" element={<DesignSystem />} />
 
             <Route element={<RequireAuth />}>
               <Route element={<AppLayout />}>
