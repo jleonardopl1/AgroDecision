@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/AppLayout";
 import { RequireAuth } from "@/components/RequireAuth";
+import { RequireStaff } from "@/components/RequireStaff";
 import { Toaster } from "@/components/ui/sonner";
 import AdminCoop from "@/pages/AdminCoop";
 import Alertas from "@/pages/Alertas";
@@ -12,6 +13,7 @@ import Chat from "@/pages/Chat";
 import CoopPortal from "@/pages/CoopPortal";
 import Dashboard from "@/pages/Dashboard";
 import DesignSystem from "@/pages/DesignSystem";
+import Equipe from "@/pages/admin/Equipe";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Margem from "@/pages/Margem";
@@ -51,6 +53,9 @@ export default function App() {
                 <Route path="/app/relatorios" element={<Relatorios />} />
                 <Route path="/app/perfil" element={<Perfil />} />
                 <Route path="/app/admin" element={<AdminCoop />} />
+                <Route element={<RequireStaff />}>
+                  <Route path="/app/admin/equipe" element={<Equipe />} />
+                </Route>
               </Route>
             </Route>
 
