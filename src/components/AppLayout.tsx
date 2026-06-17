@@ -8,12 +8,14 @@ import {
   LogOut,
   MessageCircle,
   Settings,
+  ShieldCheck,
   User as UserIcon,
   Wallet,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useAuth, useCooperado } from "@/hooks/use-auth";
+import { useStaff } from "@/hooks/use-staff";
 import { CoopThemeProvider } from "@/components/CoopThemeProvider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,6 +67,7 @@ function NavLinks({ vertical = false }: { vertical?: boolean }) {
 export function AppLayout() {
   const { signOut } = useAuth();
   const { data: cooperado } = useCooperado();
+  const { isStaff } = useStaff();
   const navigate = useNavigate();
   const coop = cooperado?.cooperativa;
   const isAdmin = cooperado?.role === "admin_coop";
@@ -94,11 +97,11 @@ export function AppLayout() {
               <span className="truncate font-bold text-foreground">
                 {coop ? coop.nome : "AgroDecision"}
               </span>
-              {coop && (
+              {coop ? (
                 <span className="hidden whitespace-nowrap text-xs text-muted-foreground sm:inline">
                   · AgroDecision
                 </span>
-              )}
+              ) : null}
             </NavLink>
 
             <nav className="hidden items-center md:flex">
@@ -125,11 +128,16 @@ export function AppLayout() {
                 <DropdownMenuItem onSelect={() => navigate("/app/perfil")}>
                   <UserIcon /> Meu perfil
                 </DropdownMenuItem>
-                {isAdmin && (
+                {isAdmin ? (
                   <DropdownMenuItem onSelect={() => navigate("/app/admin")}>
                     <Settings /> Painel da cooperativa
                   </DropdownMenuItem>
-                )}
+                ) : null}
+                {isStaff ? (
+                  <DropdownMenuItem onSelect={() => navigate("/app/admin/equipe")}>
+                    <ShieldCheck /> Equipe AgroDecision
+                  </DropdownMenuItem>
+                ) : null}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleSignOut}>
                   <LogOut /> Sair
@@ -143,7 +151,6 @@ export function AppLayout() {
           <Outlet />
         </main>
 
-        {/* Navegação inferior — mobile first (produtor no campo, uma mão no celular) */}
         <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
           <NavLinks vertical />
         </nav>
